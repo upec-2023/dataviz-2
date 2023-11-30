@@ -81,11 +81,10 @@ with col2:
     fig.update_traces(text=df4["Region"], textposition="outside")
     st.plotly_chart(fig, use_container_width=True)
 ##
-cl1, cl2 = st.columns((2))
+cl1, cl2 = st.columns(2)
 with cl1:
     with st.expander("Vue par catégorie"):
         st.write(category_df.style.background_gradient(cmap="Blues"))
-        
         csv = category_df.to_csv(index=False).encode('utf-8')
         st.download_button("Télécharger les données", data=csv, file_name="Category.csv", mime="text/csv",
                            help='Cliquez ici pour télécharger les données au format CSV')
@@ -98,4 +97,20 @@ with cl2:
         st.download_button("Télécharger les données", data=csv, file_name="Region.csv", mime="text/csv",
                            help='Cliquez ici pour télécharger les données au format CSV')
 
+##
+df4["month_year"] = df4["Order Date"].dt.to_period("M")
+df4["month_year"] = df4["month_year"].dt.strftime("%Y : %m")
+month_year = df4.groupby(by="month_year", as_index=False)["Sales"].sum()
+
+st.subheader('Analyse de séries temporelles')
+
+fig2 = px.line(month_year, x="month_year", y="Sales", labels={"Sales": "Amount"}, height=500, width=1000,
+               template="gridon")
+st.plotly_chart(fig2, use_container_width=True)
+##
+with st.expander("Vue sur la série temporelle:"):
+    st.write(month_year.T)
+    csv = month_year.to_csv(index=False).encode('utf-8')
+    st.download_button("Télécharger les données", data=csv, file_name="month_year.csv", mime="text/csv",
+                       help='Cliquez ici pour télécharger les données au format CSV')
 
