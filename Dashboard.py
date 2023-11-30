@@ -123,5 +123,22 @@ fig3 = px.treemap(df4, path=["Region", "Category", "Sub-Category"],
                   values="Sales",
                   hover_data=["Region", "Category", "Sales"],
                   color="Sub-Category")
-fig3.update_layout(width=650, height=650)
+
+fig3.update_layout(width=650, height=500)
 st.plotly_chart(fig3, use_container_width=True)
+
+##
+cl1, cl2 = st.columns(2)
+
+with cl1:
+    st.subheader("Ventes par segment")
+    fig = px.pie(df4, values="Sales", names="Segment", template="plotly_dark")
+    fig.update_traces(text=df4["Segment"], textposition="inside")
+    st.plotly_chart(fig, use_container_width=True)
+
+
+with cl2:
+    st.subheader("Ventes par catégorie")
+    fig = px.pie(df4, values="Sales", names="Region", template="plotly_dark")
+    fig.update_traces(text=df4["Region"], textposition="inside")
+    st.plotly_chart(fig, use_container_width=True)
