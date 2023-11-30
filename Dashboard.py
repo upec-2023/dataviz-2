@@ -99,18 +99,29 @@ with cl2:
 
 ##
 df4["month_year"] = df4["Order Date"].dt.to_period("M")
-df4["month_year"] = df4["month_year"].dt.strftime("%Y : %m")
+df4["month_year"] = df4["month_year"].dt.strftime("%Y : %b")
 month_year = df4.groupby(by="month_year", as_index=False)["Sales"].sum()
 
 st.subheader('Analyse de séries temporelles')
 
-fig2 = px.line(month_year, x="month_year", y="Sales", labels={"Sales": "Amount"}, height=500, width=1000,
+fig2 = px.line(month_year, x="month_year", y="Sales",
+               labels={"Sales": "Amount"}, height=500, width=1000,
                template="gridon")
 st.plotly_chart(fig2, use_container_width=True)
 ##
 with st.expander("Vue sur la série temporelle:"):
     st.write(month_year.T)
     csv = month_year.to_csv(index=False).encode('utf-8')
-    st.download_button("Télécharger les données", data=csv, file_name="month_year.csv", mime="text/csv",
+    st.download_button("Télécharger les données", data=csv,
+                       file_name="month_year.csv", mime="text/csv",
                        help='Cliquez ici pour télécharger les données au format CSV')
 
+##
+st.subheader("Vue hiérarchique des ventes à l'aide de la carte arborescente (Tree Map)")
+
+fig3 = px.treemap(df4, path=["Region", "Category", "Sub-Category"],
+                  values="Sales",
+                  hover_data=["Region", "Category", "Sales"],
+                  color="Sub-Category")
+fig3.update_layout(width=650, height=650)
+st.plotly_chart(fig3, use_container_width=True)
