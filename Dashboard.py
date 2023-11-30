@@ -1,4 +1,17 @@
 ##
+
+#streamlit==1.28.2
+#pandas==2.1.3
+#numpy==1.26.2
+#matplotlib==3.8.2
+#seaborn==0.13.0
+#plotly==5.18.0
+#bokeh==2.4.3
+#Pillow==10.1.0
+#ipython==8.18.1
+#scipy==1.11.4
+#statsmodels==0.14.0
+
 import warnings
 warnings.filterwarnings('ignore')
 
