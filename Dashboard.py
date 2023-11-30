@@ -61,5 +61,41 @@ city = st.sidebar.multiselect("Choisissez la ville", df3["City"].unique())
 if not city:
     df4 = df3.copy()
 else:
-    df4 = df3[df3["City"].isin(state)]
+    df4 = df3[df3["City"].isin(city)]
+
+##
+col1, col2 = st.columns(2)
+
+category_df = df4.groupby(by=["Category"], as_index=False)["Sales"].sum()
+
+with col1:
+    st.subheader("Ventes par catégorie")
+    fig = px.bar(category_df, x="Category", y="Sales",
+                 text=[f'${x:,.0f}' for x in category_df["Sales"]],
+                 template="seaborn")
+    st.plotly_chart(fig, use_container_width=True, height=200)
+
+with col2:
+    st.subheader("Ventes par région")
+    fig = px.pie(df4, values="Sales", names="Region", hole=0.5)
+    fig.update_traces(text=df4["Region"], textposition="outside")
+    st.plotly_chart(fig, use_container_width=True)
+##
+cl1, cl2 = st.columns((2))
+with cl1:
+    with st.expander("Vue par catégorie"):
+        st.write(category_df.style.background_gradient(cmap="Blues"))
+        
+        csv = category_df.to_csv(index=False).encode('utf-8')
+        st.download_button("Télécharger les données", data=csv, file_name="Category.csv", mime="text/csv",
+                           help='Cliquez ici pour télécharger les données au format CSV')
+
+with cl2:
+    with st.expander("Vue par région"):
+        region = df4.groupby(by="Region", as_index=False)["Sales"].sum()
+        st.write(region.style.background_gradient(cmap="Oranges"))
+        csv = region.to_csv(index=False).encode('utf-8')
+        st.download_button("Télécharger les données", data=csv, file_name="Region.csv", mime="text/csv",
+                           help='Cliquez ici pour télécharger les données au format CSV')
+
 
