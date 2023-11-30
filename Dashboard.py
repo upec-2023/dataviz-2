@@ -12,6 +12,7 @@
 #scipy==1.11.4
 #statsmodels==0.14.0
 
+##
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -149,9 +150,39 @@ with cl1:
     fig.update_traces(text=df4["Segment"], textposition="inside")
     st.plotly_chart(fig, use_container_width=True)
 
-
 with cl2:
     st.subheader("Ventes par catégorie")
-    fig = px.pie(df4, values="Sales", names="Region", template="plotly_dark")
-    fig.update_traces(text=df4["Region"], textposition="inside")
+    fig = px.pie(df4, values="Sales", names="Category", template="plotly_dark")
+    fig.update_traces(text=df4["Category"], textposition="inside")
     st.plotly_chart(fig, use_container_width=True)
+
+##
+import plotly.figure_factory as ff
+
+st.subheader(":point_right: Résumé des ventes par sous-catégorie mois par mois")
+with st.expander("Tableau Récapitulatif"):
+    df_sample = df[0:5][["Region", "State", "City", "Category", "Sales", "Profit", "Quantity"]]
+    # st.write(df_sample)
+    fig = ff.create_table(df_sample, colorscale="Cividis")
+    st.plotly_chart(fig, use_container_width=True)
+
+    st.markdown("Tableau mensuel des sous-catégories")
+    df4["month"] = df4["Order Date"].dt.month_name()
+    sub_category_Year = pd.pivot_table(data=df4, values="Sales", index=["Sub-Category"], columns="month")
+    st.write(sub_category_Year.style.background_gradient(cmap="Blues"))
+
+##
+# Create a scatter plot
+data1 = px.scatter(df4, x="Sales", y="Profit", size="Quantity")
+data1['layout'].update(title="Relation entre les ventes et les profits à l'aide d'un graphique de dispersion.",
+                       titlefont=dict(size=20), xaxis=dict(title="Sales", titlefont=dict(size=19)),
+                       yaxis=dict(title="Profit", titlefont=dict(size=19)))
+st.plotly_chart(data1, use_container_width=True)
+
+with st.expander("Visualiser le dataframe"):
+    st.write(df4.iloc[:500, 1:20:2].style.background_gradient(cmap="Oranges"))
+
+# Download orginal DataSet
+csv = df.to_csv(index=False).encode('utf-8')
+st.download_button('Télécharger les données', data=csv, file_name="Data.csv", mime="text/csv",
+                   help="Cliquez ici pour télécharger les données au format CSV")
